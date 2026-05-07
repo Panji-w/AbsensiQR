@@ -1,0 +1,58 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Room {
+  id          Int          @id @default(autoincrement())
+  name        String
+  location    String?
+  token       String       @unique
+  startTime   DateTime     
+  endTime     DateTime     
+  status      RoomStatus   @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  attendances Attendance[]
+}
+
+enum RoomStatus {
+  ACTIVE
+  FINISHED
+}
+
+model Attendance {
+  id          Int        @id @default(autoincrement())
+  name        String
+  instansi    String
+  gender      Gender
+  phone       String
+  email       String?   
+  position    String
+  signature   String     @db.Text
+  roomId      Int
+  createdAt   DateTime   @default(now())
+  room        Room       @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}
+
+enum Gender {
+  LAKI_LAKI
+  PEREMPUAN
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Ruangan {
+  id          Int        @id @default(autoincrement())
+  Room        String
+}
